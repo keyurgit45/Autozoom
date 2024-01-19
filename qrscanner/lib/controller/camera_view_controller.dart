@@ -19,6 +19,8 @@ class CameraViewController extends GetxController {
   var zoomLevel = 1.0.obs;
   var maxZoomLevel = 1.0.obs;
 
+  var isTakingPicture = false.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -56,8 +58,22 @@ class CameraViewController extends GetxController {
   }
 
   Future<void> takePicture() async {
-    if (cameraController != null && cameraController!.value.isInitialized) {
-      try {} catch (e) {}
+    try {
+      if (cameraController == null || !cameraController!.value.isInitialized) {
+        Get.snackbar('Error', 'select a camera first.');
+        return;
+      }
+
+      if (cameraController!.value.isTakingPicture) {
+        return;
+      }
+
+      final XFile file = await cameraController!.takePicture();
+      Get.snackbar('Success', 'Picture saved to ${file.path}');
+    } on CameraException catch (e) {
+      Get.snackbar('Error', 'something went wrong!');
+      print(e);
+      return;
     }
   }
 

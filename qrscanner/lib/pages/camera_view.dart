@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qrscanner/controller/camera_view_controller.dart';
 
+/// Shows camera preview
 class CameraView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
