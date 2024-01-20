@@ -7,37 +7,20 @@ import 'package:qrscanner/controller/camera_view_controller.dart';
 /// Individual bounding box
 class BoundingBox extends StatelessWidget {
   final ResultObjectDetection result;
-  final Color? boxesColor;
+
   final bool showPercentage;
   const BoundingBox(
-      {Key? key,
-      required this.result,
-      this.boxesColor,
-      this.showPercentage = true})
+      {Key? key, required this.result, this.showPercentage = true})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
     final CameraViewController controller = Get.find<CameraViewController>();
 
-    Color? usedColor;
-
     Size currSize = MediaQuery.of(context).size;
     Size screenSize = Size(currSize.width, currSize.width * (controller.ratio));
 
-    //print(screenSize);
     double factorX = screenSize.width;
     double factorY = screenSize.height;
-    if (boxesColor == null) {
-      //change colors for each label
-      usedColor = Colors.primaries[
-          ((result.className ?? result.classIndex.toString()).length +
-                  (result.className ?? result.classIndex.toString())
-                      .codeUnitAt(0) +
-                  result.classIndex) %
-              Colors.primaries.length];
-    } else {
-      usedColor = boxesColor;
-    }
 
     return Positioned(
       left: result.rect.left * factorX,
@@ -48,18 +31,22 @@ class BoundingBox extends StatelessWidget {
         width: result.rect.width * factorX,
         height: result.rect.height * factorY,
         decoration: BoxDecoration(
-            border: Border.all(color: usedColor!, width: 3),
+            border: Border.all(color: Color(0xFF318CE7), width: 3),
             borderRadius: const BorderRadius.all(Radius.circular(2))),
         child: Align(
           alignment: Alignment.topLeft,
           child: FittedBox(
             child: Container(
-              color: usedColor,
+              color: Color(0xFF318CE7),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text(result.className ?? result.classIndex.toString()),
-                  Text(" ${result.score.toStringAsFixed(2)}"),
+                  Text(
+                    result.className ?? result.classIndex.toString(),
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Text(" ${result.score.toStringAsFixed(2)}",
+                      style: TextStyle(color: Colors.white)),
                 ],
               ),
             ),

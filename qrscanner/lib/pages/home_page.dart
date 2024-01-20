@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pytorch_lite/pytorch_lite.dart';
 import 'package:qrscanner/controller/camera_view_controller.dart';
@@ -14,10 +15,12 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Camera Screen'),
+        title: Text('QR Code Autozoom'),
         actions: [
           Obx(() => Text(
-              "${yoloController.objectDetectionInferenceTime.value.inMilliseconds} ms")),
+                "Time : ${yoloController.objectDetectionInferenceTime.value.inMilliseconds} ms",
+                style: TextStyle(fontSize: 16),
+              )),
           SizedBox(
             width: 10,
           )
@@ -28,29 +31,85 @@ class HomePage extends StatelessWidget {
               children: [
                 CameraView(),
                 Obx(
-                  () => Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
+                  () => Column(
                     children: [
                       SizedBox(
-                        width: 7,
+                        height: 20,
                       ),
-                      Text("1"),
-                      Expanded(
-                        child: Slider(
-                          min: 1.0,
-                          max: 5.0,
-                          onChanged: (value) {
-                            controller.cameraController?.setZoomLevel(value);
-                            controller.zoomLevel.value = value;
-                          },
-                          value: controller.zoomLevel.value,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            "Zoom Level : ${controller.zoomLevel.value.toStringAsFixed(3)}",
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          Text(
+                            "MAX Zoom : ${controller.maxZoomLevel.value}",
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ],
                       ),
-                      Text(controller.maxZoomLevel.value.toInt().toString()),
                       SizedBox(
-                        width: 7,
+                        height: 20,
                       ),
+                      Obx(
+                        () => Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            GestureDetector(
+                              onTap: () async {
+                                controller.isTakingPicture.value = true;
+                                await HapticFeedback.vibrate();
+                                await controller.takePicture();
+                                controller.isTakingPicture.value = false;
+                              },
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: Colors.grey.shade200,
+                                    radius: 40,
+                                    child: controller.isTakingPicture.value
+                                        ? CircularProgressIndicator()
+                                        : Icon(
+                                            Icons.camera_alt_rounded,
+                                            size: 52,
+                                          ),
+                                  ),
+                                  SizedBox(
+                                    height: 7,
+                                  ),
+                                  Text(controller.isTakingPicture.value
+                                      ? "Please wait..."
+                                      : "Take a Picture")
+                                ],
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+                                controller.zoomLevel.value = 1;
+                                await controller.cameraController
+                                    ?.setZoomLevel(1);
+                              },
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: Colors.grey.shade200,
+                                    radius: 40,
+                                    child: Icon(
+                                      Icons.zoom_out,
+                                      size: 52,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 7,
+                                  ),
+                                  Text("Reset Zoom")
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -79,8 +138,8 @@ class HomePage extends StatelessWidget {
       case AppLifecycleState.resumed:
         if (!controller.cameraController!.value.isStreamingImages) {
           await controller.cameraController?.startImageStream(
-              (CameraImage image) => yoloController.onEachCameraImage(
-                  image, controller.camFrameRotation));
+              (CameraImage image) => yoloController.onEachCameraImage(image,
+                  controller.camFrameRotation, controller.setCameraZoomLevel));
         }
         break;
       default:

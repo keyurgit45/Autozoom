@@ -37,12 +37,13 @@ class YOLOController extends GetxController {
   }
 
   /// Callback to receive each frame [CameraImage] perform inference on it
-  onEachCameraImage(CameraImage cameraImage, var camFrameRotation) async {
-    runObjectDetection(cameraImage, camFrameRotation);
+  onEachCameraImage(CameraImage cameraImage, var camFrameRotation,
+      Function setCameraZoomLevel) async {
+    runObjectDetection(cameraImage, camFrameRotation, setCameraZoomLevel);
   }
 
-  Future<void> runObjectDetection(
-      CameraImage cameraImage, var camFrameRotation) async {
+  Future<void> runObjectDetection(CameraImage cameraImage, var camFrameRotation,
+      Function setCameraZoomLevel) async {
     if (isDetecting.value) {
       return;
     }
@@ -57,6 +58,7 @@ class YOLOController extends GetxController {
           await _objectModel!.getCameraImagePrediction(
         cameraImage,
         camFrameRotation,
+        boxesLimit: 5,
         minimumScore: 0.5,
         iOUThreshold: 0.5,
       );
@@ -82,8 +84,15 @@ class YOLOController extends GetxController {
           },
         });
       }
+
+      autoZoomToQR(objDetect, setCameraZoomLevel);
     }
 
     isDetecting.value = false;
+  }
+
+  void autoZoomToQR(List<ResultObjectDetection> predictions,
+      Function setCameraZoomLevel) async {
+    await setCameraZoomLevel(predictions);
   }
 }
