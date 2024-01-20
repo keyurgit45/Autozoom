@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:pytorch_lite/pytorch_lite.dart';
 import 'package:qrscanner/controller/yolo_controller.dart';
 import 'package:qrscanner/utils/app_logger.dart';
+import 'package:qrscanner/utils/snackbar.dart';
 
 class CameraViewController extends GetxController {
   final YOLOController _yoloController = Get.find<YOLOController>();
@@ -61,7 +62,7 @@ class CameraViewController extends GetxController {
   Future<void> takePicture() async {
     try {
       if (cameraController == null || !cameraController!.value.isInitialized) {
-        Get.snackbar('Error', 'select a camera first.');
+        showSnackBar('Error', 'select a camera first.');
         return;
       }
 
@@ -71,11 +72,11 @@ class CameraViewController extends GetxController {
       final XFile file = await cameraController!.takePicture();
       await GallerySaver.saveImage(file.path).then((bool? isSaved) {
         if (isSaved ?? false) {
-          Get.snackbar('Success', 'Picture saved to Gallery');
+          showSnackBar('Success', 'Picture saved to Gallery');
         }
       });
     } on CameraException catch (e) {
-      Get.snackbar('Error', 'something went wrong!');
+      showSnackBar('Error', 'something went wrong!');
       print(e);
       return;
     }

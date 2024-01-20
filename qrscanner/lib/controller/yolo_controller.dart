@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:pytorch_lite/pytorch_lite.dart';
 import 'package:qrscanner/utils/app_logger.dart';
 import 'package:image/image.dart' as img;
+import 'package:qrscanner/utils/snackbar.dart';
 
 class YOLOController extends GetxController {
   ModelObjectDetection? _objectModel;
@@ -29,9 +30,9 @@ class YOLOController extends GetxController {
           objectDetectionModelType: ObjectDetectionModelType.yolov8);
     } catch (e) {
       if (e is PlatformException) {
-        print("only supported for android, Error is $e");
+        showSnackBar("Error", "Only supported for android");
       } else {
-        print("Error is $e");
+        showSnackBar("Error", "Failed to load model!");
       }
     }
   }
