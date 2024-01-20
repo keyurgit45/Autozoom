@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:camera/camera.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
 import 'package:pytorch_lite/pytorch_lite.dart';
 import 'package:qrscanner/controller/yolo_controller.dart';
@@ -67,9 +68,12 @@ class CameraViewController extends GetxController {
       if (cameraController!.value.isTakingPicture) {
         return;
       }
-
       final XFile file = await cameraController!.takePicture();
-      Get.snackbar('Success', 'Picture saved to ${file.path}');
+      await GallerySaver.saveImage(file.path).then((bool? isSaved) {
+        if (isSaved ?? false) {
+          Get.snackbar('Success', 'Picture saved to Gallery');
+        }
+      });
     } on CameraException catch (e) {
       Get.snackbar('Error', 'something went wrong!');
       print(e);
