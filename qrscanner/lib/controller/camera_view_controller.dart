@@ -5,12 +5,15 @@ import 'package:camera/camera.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
 import 'package:pytorch_lite/pytorch_lite.dart';
+import 'package:qrscanner/controller/tflite_controller.dart';
 import 'package:qrscanner/controller/yolo_controller.dart';
 import 'package:qrscanner/utils/app_logger.dart';
 import 'package:qrscanner/utils/snackbar.dart';
 
 class CameraViewController extends GetxController {
   final YOLOController _yoloController = Get.find<YOLOController>();
+  final TfliteController _tfliteController = Get.find<TfliteController>();
+
   CameraController? cameraController;
   List<CameraDescription>? cameras;
   CameraImage? cameraImage;
@@ -41,11 +44,14 @@ class CameraViewController extends GetxController {
       );
 
       camFrameRotation = Platform.isAndroid ? cameras![0].sensorOrientation : 0;
+
       await cameraController?.initialize().then((_) async {
+        maxZoomLevel.value = await cameraController!.getMaxZoomLevel();
         // Stream of image passed to [onLatestImageAvailable] callback
-        await cameraController?.startImageStream((CameraImage image) =>
-            _yoloController.onEachCameraImage(
-                image, camFrameRotation, setCameraZoomLevel));
+        await cameraController?.startImageStream((CameraImage image) async =>
+            // _yoloController.onEachCameraImage(
+            //     image, camFrameRotation, setCameraZoomLevel)
+            await _tfliteController.runModelOnStreamFrames(image));
 
         logger.i(cameraController!.value.previewSize.toString());
 
@@ -53,8 +59,7 @@ class CameraViewController extends GetxController {
 
         logger.i(ratio);
       });
-      maxZoomLevel.value = await cameraController!.getMaxZoomLevel();
-      logger.i(maxZoomLevel);
+
       update(); // Using update() to rebuild GetBuilder widgets
     }
   }
@@ -93,7 +98,7 @@ class CameraViewController extends GetxController {
           predictions.first.rect.bottom >= 0.1) {
         if (predictions.first.rect.width > 0 &&
             predictions.first.rect.width < 0.3) {
-          level += 0.25;
+          level += 0.3;
         } else if (predictions.first.rect.width >= 0.3 &&
             predictions.first.rect.width < 0.5) {
           level += 0.2;

@@ -2,14 +2,17 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:pytorch_lite/pigeon.dart';
 import 'package:pytorch_lite/pytorch_lite.dart';
 import 'package:qrscanner/controller/camera_view_controller.dart';
+import 'package:qrscanner/controller/tflite_controller.dart';
 import 'package:qrscanner/controller/yolo_controller.dart';
 import 'package:qrscanner/pages/bounding_box.dart';
 import 'package:qrscanner/pages/camera_view.dart';
 
 class HomePage extends StatelessWidget {
   final YOLOController yoloController = Get.put(YOLOController());
+  final TfliteController tfliteController = Get.put(TfliteController());
   final CameraViewController controller = Get.put(CameraViewController());
   @override
   Widget build(BuildContext context) {

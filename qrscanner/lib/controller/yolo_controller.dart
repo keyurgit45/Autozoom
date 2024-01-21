@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pytorch_lite/pytorch_lite.dart';
 import 'package:qrscanner/utils/app_logger.dart';
-import 'package:image/image.dart' as img;
 import 'package:qrscanner/utils/snackbar.dart';
 
 class YOLOController extends GetxController {
@@ -22,10 +21,10 @@ class YOLOController extends GetxController {
   }
 
   Future loadModel() async {
-    String pathObjectDetectionModel = "assets/bestv2.torchscript";
+    String pathObjectDetectionModel = "assets/bestv3.torchscript";
     try {
       _objectModel = await PytorchLite.loadObjectDetectionModel(
-          pathObjectDetectionModel, 1, 224, 224,
+          pathObjectDetectionModel, 1, 512, 512,
           labelPath: "assets/labels.txt",
           objectDetectionModelType: ObjectDetectionModelType.yolov8);
     } catch (e) {
