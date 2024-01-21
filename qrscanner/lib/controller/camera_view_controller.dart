@@ -91,18 +91,29 @@ class CameraViewController extends GetxController {
           predictions.first.rect.right >= 0.1 &&
           predictions.first.rect.top >= 0.1 &&
           predictions.first.rect.bottom >= 0.1) {
-        print(
-            "Since width is ${predictions.first.rect.width} -> increasing level to ${level + 0.15}");
-        level += 0.15;
-        if (level > maxZoomLevel.value) level = maxZoomLevel.value;
-      } else if (predictions.first.rect.width > 0.9) {
-        print(
-            "Since width is ${predictions.first.rect.width} -> decreasing level to ${level - 0.2}");
+        if (predictions.first.rect.width > 0 &&
+            predictions.first.rect.width < 0.3) {
+          level += 0.25;
+        } else if (predictions.first.rect.width >= 0.3 &&
+            predictions.first.rect.width < 0.5) {
+          level += 0.2;
+        } else if (predictions.first.rect.width >= 0.5 &&
+            predictions.first.rect.width < 0.7) {
+          level += 0.15;
+        } else if (predictions.first.rect.width >= 0.7 &&
+            predictions.first.rect.width <= 0.75) {
+          level += 0.1;
+        }
+      } else if (predictions.first.rect.width >= 0.9 &&
+          predictions.first.rect.width < 1.5) {
         level -= 0.2;
-        if (level < 1) level = 1;
       }
     }
-
+    if (level > maxZoomLevel.value) {
+      level = maxZoomLevel.value;
+    } else if (level < 1) {
+      level = 1;
+    }
     if (zoomLevel.value != level) {
       zoomLevel.value = level;
       await cameraController?.setZoomLevel(level);
