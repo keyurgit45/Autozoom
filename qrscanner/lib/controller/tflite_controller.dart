@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:camera/camera.dart';
 import 'package:get/get.dart';
 import 'package:qrscanner/utils/app_logger.dart';
@@ -7,13 +9,20 @@ class TfliteController extends GetxController {
   var isWorking = false.obs;
   var result = "".obs;
 
+  @override
+  onInit() async {
+    super.onInit();
+    await loadModel();
+  }
+
   loadModel() async {
-    await Tflite.loadModel(
+    var res = await Tflite.loadModel(
         model: "assets/best_float32.tflite", labels: "assets/labels.txt");
+    log(res ?? "NULL");
   }
 
   runModelOnStreamFrames(CameraImage cameraImage) async {
-    var recognitions = await Tflite.runModelOnFrame(
+    var recognitions = await Tflite.detectObjectOnFrame(
         bytesList: cameraImage.planes.map((plane) {
           return plane.bytes;
         }).toList(),
@@ -22,7 +31,6 @@ class TfliteController extends GetxController {
         imageMean: 127.5,
         imageStd: 127.5,
         rotation: 90,
-        numResults: 2,
         threshold: 0.1,
         asynch: true);
 

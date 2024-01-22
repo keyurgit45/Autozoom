@@ -49,9 +49,10 @@ class CameraViewController extends GetxController {
         maxZoomLevel.value = await cameraController!.getMaxZoomLevel();
         // Stream of image passed to [onLatestImageAvailable] callback
         await cameraController?.startImageStream((CameraImage image) async =>
-            // _yoloController.onEachCameraImage(
-            //     image, camFrameRotation, setCameraZoomLevel)
-            await _tfliteController.runModelOnStreamFrames(image));
+                _yoloController.onEachCameraImage(
+                    image, camFrameRotation, setCameraZoomLevel)
+            // await _tfliteController.runModelOnStreamFrames(image)
+            );
 
         logger.i(cameraController!.value.previewSize.toString());
 
