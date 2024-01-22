@@ -38,8 +38,10 @@ dependencies:
   camera: ^0.10.5+9
   get: any
   logger: ^2.0.2+1
-  pytorch_lite:
+  pytorch_lite: ^4.2.4
   gallery_saver: ^2.3.2
+  google_fonts: any
+  
 
 
 dev_dependencies:

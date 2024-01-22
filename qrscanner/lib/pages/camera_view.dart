@@ -5,6 +5,8 @@ import 'package:qrscanner/controller/camera_view_controller.dart';
 
 /// Shows camera preview
 class CameraView extends StatelessWidget {
+  const CameraView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CameraViewController>(
@@ -12,7 +14,7 @@ class CameraView extends StatelessWidget {
       builder: (controller) {
         if (controller.cameraController == null ||
             !controller.cameraController!.value.isInitialized) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         return CameraPreview(controller.cameraController!);
       },

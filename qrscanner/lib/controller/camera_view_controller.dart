@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
-
 import 'package:camera/camera.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
@@ -11,6 +9,7 @@ import 'package:qrscanner/utils/snackbar.dart';
 
 class CameraViewController extends GetxController {
   final YOLOController _yoloController = Get.find<YOLOController>();
+
   CameraController? cameraController;
   List<CameraDescription>? cameras;
   CameraImage? cameraImage;
@@ -20,7 +19,6 @@ class CameraViewController extends GetxController {
 
   var zoomLevel = 1.0.obs;
   var maxZoomLevel = 1.0.obs;
-
   var isTakingPicture = false.obs;
 
   @override
@@ -30,32 +28,35 @@ class CameraViewController extends GetxController {
   }
 
   Future<void> initializeCamera() async {
-    cameras = await availableCameras();
-    if (cameras!.isNotEmpty) {
-      cameraController = CameraController(
-        cameras![0],
-        ResolutionPreset.medium,
-        imageFormatGroup: Platform.isAndroid
-            ? ImageFormatGroup.yuv420
-            : ImageFormatGroup.bgra8888,
-      );
+    try {
+      cameras = await availableCameras(); // check for available cameras
+      if (cameras!.isNotEmpty) {
+        cameraController = CameraController(
+          cameras![0],
+          ResolutionPreset.medium,
+          imageFormatGroup: Platform.isAndroid
+              ? ImageFormatGroup.yuv420
+              : ImageFormatGroup.bgra8888,
+        );
 
-      camFrameRotation = Platform.isAndroid ? cameras![0].sensorOrientation : 0;
-      await cameraController?.initialize().then((_) async {
-        // Stream of image passed to [onLatestImageAvailable] callback
-        await cameraController?.startImageStream((CameraImage image) =>
-            _yoloController.onEachCameraImage(
-                image, camFrameRotation, setCameraZoomLevel));
+        camFrameRotation =
+            Platform.isAndroid ? cameras![0].sensorOrientation : 0;
 
-        logger.i(cameraController!.value.previewSize.toString());
+        await cameraController?.initialize().then((_) async {
+          maxZoomLevel.value = await cameraController!.getMaxZoomLevel();
+          // Stream of image passed to [onLatestImageAvailable] callback
+          await cameraController?.startImageStream((CameraImage image) async =>
+              _yoloController.onEachCameraImage(
+                  image, camFrameRotation, setCameraZoomLevel));
 
-        ratio = cameraController!.value.aspectRatio;
+          ratio = cameraController!.value.aspectRatio;
+        });
 
-        logger.i(ratio);
-      });
-      maxZoomLevel.value = await cameraController!.getMaxZoomLevel();
-      logger.i(maxZoomLevel);
-      update(); // Using update() to rebuild GetBuilder widgets
+        update(); // Using update() to rebuild GetBuilder widgets
+      }
+    } catch (e) {
+      showSnackBar('Error', 'something went wrong!');
+      logger.log(level, e);
     }
   }
 
@@ -69,7 +70,11 @@ class CameraViewController extends GetxController {
       if (cameraController!.value.isTakingPicture) {
         return;
       }
+
+      // capture picture
       final XFile file = await cameraController!.takePicture();
+
+      //save image to gallery
       await GallerySaver.saveImage(file.path).then((bool? isSaved) {
         if (isSaved ?? false) {
           showSnackBar('Success', 'Picture saved to Gallery');
@@ -77,13 +82,17 @@ class CameraViewController extends GetxController {
       });
     } on CameraException catch (e) {
       showSnackBar('Error', 'something went wrong!');
-      print(e);
+      logger.log(level, e);
       return;
     }
   }
 
+  /// takes List of predictions and increases or decreases zoom level according to width of the QR code
   void setCameraZoomLevel(List<ResultObjectDetection> predictions) async {
     double level = zoomLevel.value;
+
+    predictions.sort((a, b) =>
+        b.score.compareTo(a.score)); // sort predictions according to score
 
     if (predictions.isNotEmpty) {
       if (predictions.first.rect.width <= 0.8 &&
@@ -91,18 +100,29 @@ class CameraViewController extends GetxController {
           predictions.first.rect.right >= 0.1 &&
           predictions.first.rect.top >= 0.1 &&
           predictions.first.rect.bottom >= 0.1) {
-        print(
-            "Since width is ${predictions.first.rect.width} -> increasing level to ${level + 0.15}");
-        level += 0.15;
-        if (level > maxZoomLevel.value) level = maxZoomLevel.value;
-      } else if (predictions.first.rect.width > 0.9) {
-        print(
-            "Since width is ${predictions.first.rect.width} -> decreasing level to ${level - 0.2}");
+        if (predictions.first.rect.width > 0 &&
+            predictions.first.rect.width < 0.3) {
+          level += 0.3;
+        } else if (predictions.first.rect.width >= 0.3 &&
+            predictions.first.rect.width < 0.5) {
+          level += 0.2;
+        } else if (predictions.first.rect.width >= 0.5 &&
+            predictions.first.rect.width < 0.7) {
+          level += 0.15;
+        } else if (predictions.first.rect.width >= 0.7 &&
+            predictions.first.rect.width <= 0.75) {
+          level += 0.1;
+        }
+      } else if (predictions.first.rect.width >= 0.9 &&
+          predictions.first.rect.width < 1.5) {
         level -= 0.2;
-        if (level < 1) level = 1;
       }
     }
-
+    if (level > maxZoomLevel.value) {
+      level = maxZoomLevel.value;
+    } else if (level < 1) {
+      level = 1;
+    }
     if (zoomLevel.value != level) {
       zoomLevel.value = level;
       await cameraController?.setZoomLevel(level);

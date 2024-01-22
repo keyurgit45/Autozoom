@@ -1,12 +1,9 @@
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:camera/camera.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pytorch_lite/pytorch_lite.dart';
 import 'package:qrscanner/utils/app_logger.dart';
-import 'package:image/image.dart' as img;
 import 'package:qrscanner/utils/snackbar.dart';
 
 class YOLOController extends GetxController {
@@ -14,6 +11,12 @@ class YOLOController extends GetxController {
   var isDetecting = false.obs;
   var results = Rxn<List<ResultObjectDetection>>([]);
   var objectDetectionInferenceTime = Rx<Duration>(Duration.zero);
+  static const String _modelPath = "assets/bestv2.torchscript";
+  static const String _labelPath = "assets/labels.txt";
+  static const int _imgsz = 224; // image size
+  static const int _numberOfClasses = 1;
+  static const ObjectDetectionModelType _objectDetectionModelType =
+      ObjectDetectionModelType.yolov8;
 
   @override
   Future<void> onInit() async {
@@ -22,12 +25,12 @@ class YOLOController extends GetxController {
   }
 
   Future loadModel() async {
-    String pathObjectDetectionModel = "assets/bestv2.torchscript";
     try {
       _objectModel = await PytorchLite.loadObjectDetectionModel(
-          pathObjectDetectionModel, 1, 224, 224,
-          labelPath: "assets/labels.txt",
-          objectDetectionModelType: ObjectDetectionModelType.yolov8);
+          _modelPath, _numberOfClasses, _imgsz, _imgsz,
+          labelPath: _labelPath,
+          objectDetectionModelType: _objectDetectionModelType);
+      logger.log(level, "Model loaded");
     } catch (e) {
       if (e is PlatformException) {
         showSnackBar("Error", "Only supported for android");
@@ -73,7 +76,7 @@ class YOLOController extends GetxController {
 
       objectDetectionInferenceTime.value = stopwatch.elapsed;
       for (var element in results.value!) {
-        print({
+        debugPrint({
           "rect": {
             "left": element.rect.left,
             "top": element.rect.top,
@@ -83,7 +86,7 @@ class YOLOController extends GetxController {
             "bottom": element.rect.bottom,
             "time to process": stopwatch.elapsed
           },
-        });
+        }.toString());
       }
 
       autoZoomToQR(objDetect, setCameraZoomLevel);
