@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pytorch_lite/pytorch_lite.dart';
@@ -29,7 +30,7 @@ class YOLOController extends GetxController {
           _modelPath, _numberOfClasses, _imgsz, _imgsz,
           labelPath: _labelPath,
           objectDetectionModelType: _objectDetectionModelType);
-      logger.i("Model loaded");
+      logger.log(level, "Model loaded");
     } catch (e) {
       if (e is PlatformException) {
         showSnackBar("Error", "Only supported for android");
@@ -75,7 +76,7 @@ class YOLOController extends GetxController {
 
       objectDetectionInferenceTime.value = stopwatch.elapsed;
       for (var element in results.value!) {
-        logger.i({
+        debugPrint({
           "rect": {
             "left": element.rect.left,
             "top": element.rect.top,
@@ -85,7 +86,7 @@ class YOLOController extends GetxController {
             "bottom": element.rect.bottom,
             "time to process": stopwatch.elapsed
           },
-        });
+        }.toString());
       }
 
       autoZoomToQR(objDetect, setCameraZoomLevel);

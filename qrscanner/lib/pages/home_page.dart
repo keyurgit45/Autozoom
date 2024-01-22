@@ -1,151 +1,54 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:pytorch_lite/pigeon.dart';
-import 'package:pytorch_lite/pytorch_lite.dart';
-import 'package:qrscanner/controller/camera_view_controller.dart';
-import 'package:qrscanner/controller/tflite_controller.dart';
-import 'package:qrscanner/controller/yolo_controller.dart';
-import 'package:qrscanner/pages/bounding_box.dart';
-import 'package:qrscanner/pages/camera_view.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomePage extends StatelessWidget {
-  final YOLOController yoloController = Get.put(YOLOController());
-  final TfliteController tfliteController = Get.put(TfliteController());
-  final CameraViewController controller = Get.put(CameraViewController());
+  const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('QR Code Autozoom'),
-        actions: [
-          Obx(() => Text(
-                "Time : ${yoloController.objectDetectionInferenceTime.value.inMilliseconds} ms",
-                style: TextStyle(fontSize: 16),
-              )),
-          SizedBox(
-            width: 10,
-          )
-        ],
+        title: const Text('QR Code Autozoom'),
+        elevation: 4,
       ),
-      body: Obx(() => Stack(children: [
-            Column(
-              children: [
-                CameraView(),
-                Obx(
-                  () => Column(
-                    children: [
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text(
-                            "Zoom Level : ${controller.zoomLevel.value.toStringAsFixed(3)}",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          Text(
-                            "MAX Zoom : ${controller.maxZoomLevel.value}",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Obx(
-                        () => Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            GestureDetector(
-                              onTap: () async {
-                                controller.isTakingPicture.value = true;
-                                await HapticFeedback.vibrate();
-                                await controller.takePicture();
-                                controller.isTakingPicture.value = false;
-                              },
-                              child: Column(
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: Colors.grey.shade200,
-                                    radius: 40,
-                                    child: controller.isTakingPicture.value
-                                        ? CircularProgressIndicator()
-                                        : Icon(
-                                            Icons.camera_alt_rounded,
-                                            size: 52,
-                                          ),
-                                  ),
-                                  SizedBox(
-                                    height: 7,
-                                  ),
-                                  Text(controller.isTakingPicture.value
-                                      ? "Please wait..."
-                                      : "Take a Picture")
-                                ],
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () async {
-                                controller.zoomLevel.value = 1;
-                                await controller.cameraController
-                                    ?.setZoomLevel(1);
-                              },
-                              child: Column(
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: Colors.grey.shade200,
-                                    radius: 40,
-                                    child: Icon(
-                                      Icons.zoom_out,
-                                      size: 52,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 7,
-                                  ),
-                                  Text("Reset Zoom")
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Camera with intelligent autozoom in Flutter",
+              style:
+                  GoogleFonts.nunito(fontSize: 28, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.05,
+            ),
+            Text(
+              "QR Code Autozoom is a Flutter application that addresses the challenge of intelligent autozoom in the camera. Inspired by the problem statement, the app enables users to take pictures of objects, specifically focusing on scenarios like capturing images of dogs or cats. In this app, I have used a QR code detection model inspired by Google Pay's autozoom feature. The app utilizes Ultralytics YOLO v8 model to intelligently autozoom to the right size, ensuring that the object in view is captured with optimal clarity.",
+              style: GoogleFonts.montserrat(fontSize: 18),
+              textAlign: TextAlign.justify,
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.05,
+            ),
+            GestureDetector(
+              onTap: () => Get.toNamed('/qrautozoom'),
+              child: CircleAvatar(
+                backgroundColor: Colors.grey.shade200,
+                radius: 40,
+                child: const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 52,
                 ),
-              ],
-            ), // Bounding boxes
-            boundingBoxes2(yoloController.results.value)
-          ])),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
-  }
-
-  Widget boundingBoxes2(List<ResultObjectDetection>? results) {
-    if (results == null) {
-      return Container();
-    }
-    return Stack(
-      children: results.map((e) => BoundingBox(result: e)).toList(),
-    );
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    switch (state) {
-      case AppLifecycleState.paused:
-        controller.cameraController?.stopImageStream();
-        break;
-      case AppLifecycleState.resumed:
-        if (!controller.cameraController!.value.isStreamingImages) {
-          await controller.cameraController?.startImageStream(
-              (CameraImage image) => yoloController.onEachCameraImage(image,
-                  controller.camFrameRotation, controller.setCameraZoomLevel));
-        }
-        break;
-      default:
-    }
   }
 }

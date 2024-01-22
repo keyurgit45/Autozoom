@@ -40,7 +40,7 @@ dependencies:
   logger: ^2.0.2+1
   pytorch_lite: ^4.2.4
   gallery_saver: ^2.3.2
-  tflite_v2: ^1.0.0 
+  google_fonts: any
   
 
 
