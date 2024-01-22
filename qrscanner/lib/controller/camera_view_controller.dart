@@ -49,11 +49,7 @@ class CameraViewController extends GetxController {
               _yoloController.onEachCameraImage(
                   image, camFrameRotation, setCameraZoomLevel));
 
-          logger.log(level, cameraController!.value.previewSize.toString());
-
           ratio = cameraController!.value.aspectRatio;
-
-          logger.log(level, ratio);
         });
 
         update(); // Using update() to rebuild GetBuilder widgets
