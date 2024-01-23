@@ -7,7 +7,8 @@ import 'package:qrscanner/controller/yolo_controller.dart';
 import 'package:qrscanner/utils/app_logger.dart';
 import 'package:qrscanner/utils/snackbar.dart';
 
-class CameraViewController extends GetxController {
+class CameraViewController extends FullLifeCycleController
+    with FullLifeCycleMixin {
   final YOLOController _yoloController = Get.find<YOLOController>();
 
   CameraController? cameraController;
@@ -23,8 +24,8 @@ class CameraViewController extends GetxController {
 
   @override
   void onInit() {
-    super.onInit();
     initializeCamera();
+    super.onInit();
   }
 
   Future<void> initializeCamera() async {
@@ -118,6 +119,8 @@ class CameraViewController extends GetxController {
         level -= 0.2;
       }
     }
+
+    // check if zoom level is outside [1, maxZoomLevel]
     if (level > maxZoomLevel.value) {
       level = maxZoomLevel.value;
     } else if (level < 1) {
@@ -127,6 +130,39 @@ class CameraViewController extends GetxController {
       zoomLevel.value = level;
       await cameraController?.setZoomLevel(level);
     }
+  }
+
+  @override
+  void onDetached() {
+    logger.i('onDetached called');
+  }
+
+  @override
+  void onInactive() {
+    logger.i('onInative called');
+  }
+
+  @override
+  void onPaused() async {
+    // pause image stream
+    await cameraController?.stopImageStream();
+    logger.i('onPaused called');
+  }
+
+  @override
+  void onResumed() async {
+    logger.i('onResumed called');
+    // start image stream again
+    if (!cameraController!.value.isStreamingImages) {
+      await cameraController?.startImageStream((CameraImage image) =>
+          _yoloController.onEachCameraImage(
+              image, camFrameRotation, setCameraZoomLevel));
+    }
+  }
+
+  @override
+  void onHidden() {
+    logger.i('onHidden called');
   }
 
   @override
