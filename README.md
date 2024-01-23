@@ -17,7 +17,9 @@ The motivation behind QR Code Autozoom is to provide a solution to the challenge
 
 ## Demo
 
-[![Watch the demo](http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4)]([link-to-your-demo-video](http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4))
+https://github.com/keyurgit45/QRCodeAutozoom/assets/75253653/ec9a8c61-bca5-466e-a6e7-35b6718643ef
+
+https://github.com/keyurgit45/QRCodeAutozoom/assets/75253653/0661b5be-bc31-4b05-8e82-ae6619c96189
 
 ## Getting Started
 
