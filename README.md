@@ -3,7 +3,7 @@
 
 ## Description
 
-QR Code Autozoom is a Flutter application that addresses the challenge of intelligent autozoom in the camera. Inspired by the problem statement, our app enables users to take pictures of objects, specifically focusing on scenarios like capturing images of dogs or cats. The app utilizes machine learning models to intelligently autozoom to the right size, ensuring that the object in view is captured with optimal clarity.
+QR Code Autozoom is a Flutter application that addresses the challenge of intelligent autozoom in the camera. Inspired by the problem statement, the app enables users to take pictures of objects, specifically focusing on scenarios like capturing images of dogs or cats. In this app, I have used a QR code detection model inspired by Google Pay's autozoom feature. The app utilizes the Ultralytics YOLO v8 model to intelligently autozoom to the right size, ensuring that the object in view is captured with optimal clarity.
 
 ## Motivation
 
