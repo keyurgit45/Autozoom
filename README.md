@@ -1,19 +1,19 @@
-
+                
 # Camera with intelligent autozoom in Flutter
 
 ## Description
 
-QR Code Autozoom is a Flutter application that addresses the challenge of intelligent autozoom in the camera. Inspired by the problem statement, the app enables users to take pictures of objects, specifically focusing on scenarios like capturing images of dogs or cats. In this app, I have used a QR code detection model inspired by Google Pay's autozoom feature. The app utilizes the Ultralytics YOLO v8 model to intelligently autozoom to the right size, ensuring that the object in view is captured with optimal clarity.
+QR Code Autozoom is a special camera app made with Flutter. Inspired by how Google Pay does it, this app is perfect for taking pictures of QR codes. QR code model can be replaced by anything like dogs or cats. It uses an Ultralytics YOLO v8 to find QR codes and zoom in just right. So, your pictures will always look clear and awesome! It's all about making your pictures look great by automatically zooming in on the things you want to capture.
 
 ## Motivation
 
-The motivation behind QR Code Autozoom is to provide a solution to the challenge of intelligent autozoom in Flutter. By creating an application that can dynamically adjust the zoom level based on the object in focus, we aim to enhance the user experience when capturing images, particularly in scenarios where speed and precision are essential. QR Code Autozoom is inspired by the desire to make the process of taking pictures more efficient and user-friendly.
+This application addresses the challenge outlined in the [home qualification task](https://ccextractor.org/public/gsoc/takehome/#camera-with-intelligent-autozoom-in-flutter). The implemented solution utilizes the Ultralytics YOLO v8 model, trained on a custom QR dataset. The code for model training is provided within the repository, allowing for easy model replacement for different object detection purposes. To execute the model on the device, the pytorch_lite package is employed. On my MOTO G82 5G device, the average time for QR code detection ranges from 500 to 700 milliseconds. While the official flutter package from Ultralytics could enhance detection speed to approximately 50-70 milliseconds, its use was precluded due to licensing restrictions.
 
 ## Features
 
 - **Intelligent Autozoom:** The app automatically adjusts the zoom level to capture the QR Code in focus.
   
-- **Object Recognition:** Leveraging pre-trained machine learning models, the app can recognize and adjust the zoom for specific objects, in this case, QR Code.
+- **Object Recognition:** Leveraging custom-trained machine learning models, the app can recognize and adjust the zoom for specific objects, such as QR codes.
 
 ## Demo
 
@@ -44,3 +44,17 @@ To get started with QR Code Autozoom, follow these steps:
    ```bash
    flutter run
    ```
+
+### Acknowledgments
+
+I would like to express my gratitude to the following individuals and communities for their contributions to this project:
+
+- **Ultralytics YOLO v8 Model Developers:** For providing the powerful YOLO v8 model that forms the core of our object detection capabilities.
+  
+- **Roboflow:** For providing QR code dataset.
+  
+- **PyTorch and Flutter Communities:** For creating and maintaining the essential tools and frameworks that enable the seamless integration of PyTorch models with Flutter.
+
+### Contributing Guidelines
+
+Contributions from the community are highly valued! If you have ideas for improvements, new features, or bug fixes, please feel free to contribute. Fork the repository, make your changes, and submit a pull request. Your involvement is greatly appreciated in enhancing QR Code Autozoom. Thank you for considering contributing!
