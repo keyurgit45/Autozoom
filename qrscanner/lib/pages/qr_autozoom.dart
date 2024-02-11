@@ -162,21 +162,4 @@ class QRAutozoom extends StatelessWidget {
       children: results.map((e) => BoundingBox(result: e)).toList(),
     );
   }
-
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) async {
-  //   switch (state) {
-  //     case AppLifecycleState.paused:
-  //       controller.cameraController?.stopImageStream();
-  //       break;
-  //     case AppLifecycleState.resumed:
-  //       if (!controller.cameraController!.value.isStreamingImages) {
-  //         await controller.cameraController?.startImageStream(
-  //             (CameraImage image) => yoloController.onEachCameraImage(image,
-  //                 controller.camFrameRotation, controller.setCameraZoomLevel));
-  //       }
-  //       break;
-  //     default:
-  //   }
-  // }
 }

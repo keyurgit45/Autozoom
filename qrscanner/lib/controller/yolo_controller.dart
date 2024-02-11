@@ -103,10 +103,12 @@ class YOLOController extends GetxController {
         }.toString());
       }
 
+      // checks the number of class detected in results
       Set<String?>? set;
       if (results.value != null) {
         set = Set.from(results.value!.map((e) => e.className).toList());
         detectedClasses.value = set.length;
+        // autozoom only if 1 class is detected in camera frame
         if (set.length == 1) {
           autoZoomToQR(objDetect, setCameraZoomLevel);
         }
