@@ -14,7 +14,12 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/', page: () => HomePage()),
         GetPage(
             name: '/qrautozoom',
-            page: () => QRAutozoom(),
+            page: () => QRAutozoom(
+                  model: Get.arguments["model"],
+                  label: Get.arguments["label"],
+                  imgz: Get.arguments["imgz"],
+                  numberOfClasses: Get.arguments["numberOfClasses"],
+                ),
             transition: Transition.cupertino)
       ],
     );

@@ -8,15 +8,26 @@ import 'package:qrscanner/pages/bounding_box.dart';
 import 'package:qrscanner/pages/camera_view.dart';
 
 class QRAutozoom extends StatelessWidget {
-  final YOLOController yoloController = Get.put(YOLOController());
-  final CameraViewController controller = Get.put(CameraViewController());
+  QRAutozoom(
+      {required this.model,
+      required this.label,
+      required this.imgz,
+      required this.numberOfClasses});
+  final String model;
+  final String label;
+  final int imgz;
+  final int numberOfClasses;
 
-  QRAutozoom({super.key});
   @override
   Widget build(BuildContext context) {
+    final YOLOController yoloController =
+        Get.put(YOLOController(model, label, imgz, numberOfClasses));
+    final CameraViewController controller = Get.put(CameraViewController());
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('QR Code Autozoom'),
+        title:
+            Text(model == "bestv2" ? 'QR Code Autozoom' : "Object Detection"),
         actions: [
           Obx(() => Text(
                 "Time : ${yoloController.objectDetectionInferenceTime.value.inMilliseconds} ms",
@@ -115,7 +126,29 @@ class QRAutozoom extends StatelessWidget {
                 ),
               ],
             ), // Bounding boxes
-            boundingBoxes2(yoloController.results.value)
+            boundingBoxes2(yoloController.results.value),
+            Obx(() => yoloController.detectedClasses.value > 1
+                ? Positioned(
+                    top: 13,
+                    left: 20,
+                    right: 20,
+                    child: Container(
+                      height: 30,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(12))),
+                      child: Text(
+                        "Please keep only 1 object in frame",
+                        style: TextStyle(
+                            color: Colors.grey.shade700,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                : Container())
           ])),
     );
   }

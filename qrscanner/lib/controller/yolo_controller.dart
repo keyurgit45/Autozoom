@@ -7,16 +7,30 @@ import 'package:qrscanner/utils/app_logger.dart';
 import 'package:qrscanner/utils/snackbar.dart';
 
 class YOLOController extends GetxController {
+  YOLOController(this.model, this.label, this.imgz, this.numberOfClasses) {
+    _modelPath = "assets/$model.torchscript";
+    _labelPath = "assets/$label.txt";
+    _imgsz = imgz;
+    _numberOfClasses = numberOfClasses;
+  }
+  final String model;
+  final String label;
+  final int imgz;
+  final int numberOfClasses;
+
+  late String _modelPath;
+  late String _labelPath;
+  late int _imgsz;
+  late int _numberOfClasses;
+
   ModelObjectDetection? _objectModel;
   var isDetecting = false.obs;
   var results = Rxn<List<ResultObjectDetection>>([]);
   var objectDetectionInferenceTime = Rx<Duration>(Duration.zero);
-  static const String _modelPath = "assets/bestv2.torchscript";
-  static const String _labelPath = "assets/labels.txt";
-  static const int _imgsz = 224; // image size
-  static const int _numberOfClasses = 1;
+
   static const ObjectDetectionModelType _objectDetectionModelType =
       ObjectDetectionModelType.yolov8;
+  var detectedClasses = 0.obs;
 
   @override
   Future<void> onInit() async {
@@ -89,7 +103,14 @@ class YOLOController extends GetxController {
         }.toString());
       }
 
-      autoZoomToQR(objDetect, setCameraZoomLevel);
+      Set<String?>? set;
+      if (results.value != null) {
+        set = Set.from(results.value!.map((e) => e.className).toList());
+        detectedClasses.value = set.length;
+        if (set.length == 1) {
+          autoZoomToQR(objDetect, setCameraZoomLevel);
+        }
+      }
     }
 
     isDetecting.value = false;
