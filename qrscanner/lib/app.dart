@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrscanner/pages/home_page.dart';
-import 'package:qrscanner/pages/qr_autozoom.dart';
+import 'package:qrscanner/navigation/app_pages.dart';
+import 'package:qrscanner/navigation/app_routes.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -9,14 +9,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      initialRoute: '/',
-      getPages: [
-        GetPage(name: '/', page: () => HomePage()),
-        GetPage(
-            name: '/qrautozoom',
-            page: () => QRAutozoom(),
-            transition: Transition.cupertino)
-      ],
-    );
+        theme: ThemeData.light(useMaterial3: true),
+        initialRoute: AppRoutes.homepage,
+        getPages: AppPages.pages);
   }
 }
