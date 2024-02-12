@@ -3,7 +3,10 @@
 
 ## Description
 
-QR Code Autozoom is a special camera app made with Flutter. Inspired by how Google Pay does it, this app is perfect for taking pictures of QR codes. QR code model can be replaced by anything like dogs or cats. It uses an Ultralytics YOLO v8 to find QR codes and zoom in just right. So, your pictures will always look clear and awesome! It's all about making your pictures look great by automatically zooming in on the things you want to capture.
+QR Code Autozoom is a special camera app made with Flutter. Inspired by how Google Pay does it, this app is perfect for taking pictures of QR codes. QR code model can be replaced by anything like dogs or cats. It uses an Ultralytics YOLO v8 to find QR codes and zoom in just right. So, your pictures will always look clear and awesome! It's all about making your pictures look great by automatically zooming in on what you want to capture.
+
+### *Update*: 
+The App has been updated to support not only the QR code dataset but also the COCO dataset and OpenImageV7 dataset, providing a wider range of object detection options. However, only one type of object should be present in the camera frame at a time. The accuracy of object detection relies on the pre-trained YOLO v8 model used. The COCO dataset contains 80 classes, whereas the OpenImageV7 dataset has 601 classes. It has undergone a UI redesign. 
 
 ## Motivation
 
@@ -47,7 +50,7 @@ To get started with QR Code Autozoom, follow these steps:
 
 ### Acknowledgments
 
-I would like to express my gratitude to the following individuals and communities for their contributions to this project:
+I want to express my gratitude to the following individuals and communities for their contributions to this project:
 
 - **Ultralytics YOLO v8 Model Developers:** For providing the powerful YOLO v8 model that forms the core of our object detection capabilities.
   
