@@ -71,58 +71,6 @@ class HomePage extends StatelessWidget {
                                     fontWeight: FontWeight.bold),
                               )),
                             )),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.03,
-                        ),
-                        GestureDetector(
-                            onTap: () =>
-                                Get.toNamed(AppRoutes.qrautozoom, arguments: {
-                                  "model": Consts.modelPath2,
-                                  "label": Consts.modelLabels2,
-                                  "imgz": Consts.modelImgz2,
-                                  "numberOfClasses": Consts.modelClasses2
-                                }),
-                            child: Container(
-                              height: 50,
-                              width: MediaQuery.of(context).size.width * 0.7,
-                              decoration: BoxDecoration(
-                                  color: Consts.appColor,
-                                  borderRadius: BorderRadius.circular(12)),
-                              child: Center(
-                                  child: Text(
-                                Consts.modelName2,
-                                style: GoogleFonts.montserrat(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              )),
-                            )),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.03,
-                        ),
-                        GestureDetector(
-                            onTap: () =>
-                                Get.toNamed(AppRoutes.qrautozoom, arguments: {
-                                  "model": Consts.modelPath3,
-                                  "label": Consts.modelLabels3,
-                                  "imgz": Consts.modelImgz3,
-                                  "numberOfClasses": Consts.modelClasses3
-                                }),
-                            child: Container(
-                              height: 50,
-                              width: MediaQuery.of(context).size.width * 0.7,
-                              decoration: BoxDecoration(
-                                  color: Consts.appColor,
-                                  borderRadius: BorderRadius.circular(12)),
-                              child: Center(
-                                  child: Text(
-                                Consts.modelName3,
-                                style: GoogleFonts.montserrat(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              )),
-                            )),
                       ]),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12),
