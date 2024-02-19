@@ -1,7 +1,7 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart';
+import 'package:qrscanner/utils/app_logger.dart';
 import 'package:qrscanner/utils/path_utils.dart';
 
 class ObjectDetectionController extends GetxController {
@@ -11,25 +11,11 @@ class ObjectDetectionController extends GetxController {
   var isBusy = false.obs;
 
   var text = "".obs;
-  int option = 1;
 
   var results = <DetectedObject>[].obs;
   var imageSize = Rx<Size>(Size.zero);
   var rotation = Rx<InputImageRotation>(InputImageRotation.rotation0deg);
   var objectDetectionInferenceTime = Rx<Duration>(Duration.zero);
-
-  final _options = {
-    'default': '',
-    'object_custom': 'object_labeler.tflite',
-    'fruits': 'object_labeler_fruits.tflite',
-    'flowers': 'object_labeler_flowers.tflite',
-
-    'food': 'lite-model_aiy_vision_classifier_food_V1_1.tflite',
-    // https://tfhub.dev/google/lite-model/aiy/vision/classifier/food_V1/1
-
-    'plants': 'lite-model_aiy_vision_classifier_plants_V1_3.tflite',
-    // https://tfhub.dev/google/lite-model/aiy/vision/classifier/plants_V1/3
-  };
 
   @override
   Future<void> onInit() async {
@@ -47,32 +33,18 @@ class ObjectDetectionController extends GetxController {
   Future<void> _initializeDetector() async {
     _objectDetector?.close();
     _objectDetector = null;
-    print('Set detector in mode: $mode');
+    logger.i('Set detector in mode: $mode');
 
-    if (option == 0) {
-      // use the default model
-      print('use the default model');
-      final options = ObjectDetectorOptions(
+    final modelPath = await getAssetPath('assets/object_labeler.tflite');
+    logger.i('use custom model path: $modelPath');
+    final options = LocalObjectDetectorOptions(
         mode: mode,
+        modelPath: modelPath,
         classifyObjects: true,
         multipleObjects: true,
-      );
-      _objectDetector = ObjectDetector(options: options);
-    } else if (option > 0 && option <= _options.length) {
-      // use a custom model
-      // make sure to add tflite model to assets/ml
-      final _option = _options[_options.keys.toList()[option]] ?? '';
-      final modelPath = await getAssetPath('assets/$_option');
-      print('use custom model path: $modelPath');
-      final options = LocalObjectDetectorOptions(
-          mode: mode,
-          modelPath: modelPath,
-          classifyObjects: true,
-          multipleObjects: true,
-          maximumLabelsPerObject: 5,
-          confidenceThreshold: 0.7);
-      _objectDetector = ObjectDetector(options: options);
-    }
+        maximumLabelsPerObject: 5,
+        confidenceThreshold: 0.7);
+    _objectDetector = ObjectDetector(options: options);
 
     canProcess.value = true;
   }
@@ -104,7 +76,7 @@ class ObjectDetectionController extends GetxController {
             'Object:  trackingId: ${object.trackingId} - ${object.labels.map((e) => e.text)}\n\n';
       }
       text.value = _text;
-      print(text);
+      logger.i(text);
     }
     isBusy.value = false;
   }

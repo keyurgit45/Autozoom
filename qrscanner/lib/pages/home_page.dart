@@ -49,13 +49,7 @@ class HomePage extends StatelessWidget {
                           height: MediaQuery.of(context).size.height * 0.03,
                         ),
                         GestureDetector(
-                            onTap: () =>
-                                Get.toNamed(AppRoutes.qrautozoom, arguments: {
-                                  "model": Consts.modelPath1,
-                                  "label": Consts.modelLabels1,
-                                  "imgz": Consts.modelImgz1,
-                                  "numberOfClasses": Consts.modelClasses1
-                                }),
+                            onTap: () => Get.toNamed(AppRoutes.objectdetection),
                             child: Container(
                               height: 50,
                               width: MediaQuery.of(context).size.width * 0.7,
@@ -64,7 +58,7 @@ class HomePage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(12)),
                               child: Center(
                                   child: Text(
-                                Consts.modelName1,
+                                "Start Detecting",
                                 style: GoogleFonts.montserrat(
                                     fontSize: 18,
                                     color: Colors.white,
