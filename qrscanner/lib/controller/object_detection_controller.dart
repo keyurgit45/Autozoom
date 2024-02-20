@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart';
 import 'package:qrscanner/utils/app_logger.dart';
+import 'package:qrscanner/utils/constants.dart';
 import 'package:qrscanner/utils/path_utils.dart';
 
 class ObjectDetectionController extends GetxController {
@@ -10,11 +11,9 @@ class ObjectDetectionController extends GetxController {
   var canProcess = false.obs;
   var isBusy = false.obs;
 
-  var text = "".obs;
-
   var results = <DetectedObject>[].obs;
   var imageSize = Rx<Size>(Size.zero);
-  var rotation = Rx<InputImageRotation>(InputImageRotation.rotation0deg);
+  var rotation = Rx<InputImageRotation>(InputImageRotation.rotation90deg);
   var objectDetectionInferenceTime = Rx<Duration>(Duration.zero);
 
   @override
@@ -27,7 +26,7 @@ class ObjectDetectionController extends GetxController {
   void onClose() {
     canProcess.value = false;
     _objectDetector?.close();
-    super.dispose();
+    super.onClose();
   }
 
   Future<void> _initializeDetector() async {
@@ -35,7 +34,7 @@ class ObjectDetectionController extends GetxController {
     _objectDetector = null;
     logger.i('Set detector in mode: $mode');
 
-    final modelPath = await getAssetPath('assets/object_labeler.tflite');
+    final modelPath = await getAssetPath(Consts.modelPath);
     logger.i('use custom model path: $modelPath');
     final options = LocalObjectDetectorOptions(
         mode: mode,
@@ -49,12 +48,12 @@ class ObjectDetectionController extends GetxController {
     canProcess.value = true;
   }
 
-  Future<void> processImage(InputImage inputImage) async {
+  Future<void> processImage(
+      InputImage inputImage, Function setCameraZoomLevel) async {
     if (_objectDetector == null) return;
     if (!canProcess.value) return;
     if (isBusy.value) return;
     isBusy.value = true;
-    text.value = '';
     Stopwatch stopwatch = Stopwatch()..start();
     final objects = await _objectDetector!.processImage(inputImage);
     stopwatch.stop();
@@ -69,19 +68,14 @@ class ObjectDetectionController extends GetxController {
       imageSize.value = inputImage.metadata!.size;
       rotation.value = inputImage.metadata!.rotation;
       objectDetectionInferenceTime.value = stopwatch.elapsed;
-    } else {
-      String _text = 'Objects found: ${objects.length}\n\n';
-      for (final object in objects) {
-        _text +=
-            'Object:  trackingId: ${object.trackingId} - ${object.labels.map((e) => e.text)}\n\n';
-      }
-      text.value = _text;
-      logger.i(text);
+
+      autoZoomToQR(results.value, setCameraZoomLevel, imageSize.value);
     }
     isBusy.value = false;
   }
 
-  void autoZoomToQR(var predictions, Function setCameraZoomLevel) async {
-    await setCameraZoomLevel(predictions);
+  void autoZoomToQR(List<DetectedObject> predictions,
+      Function setCameraZoomLevel, Size imageSize) async {
+    await setCameraZoomLevel(predictions, imageSize);
   }
 }

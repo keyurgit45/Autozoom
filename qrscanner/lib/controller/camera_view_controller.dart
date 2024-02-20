@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
@@ -55,7 +56,9 @@ class CameraViewController extends FullLifeCycleController
           // Stream of image passed to [onLatestImageAvailable] callback
           await cameraController?.startImageStream((CameraImage image) async {
             InputImage? inputImage = _inputImageFromCameraImage(image);
-            if (inputImage != null) _controller.processImage(inputImage!);
+            if (inputImage != null) {
+              _controller.processImage(inputImage, setCameraZoomLevel);
+            }
           });
 
           ratio = cameraController!.value.aspectRatio;
@@ -98,15 +101,15 @@ class CameraViewController extends FullLifeCycleController
 
   InputImage? _inputImageFromCameraImage(CameraImage image) {
     if (cameraController == null) return null;
-
-    // get image rotation
-    // it is used in android to convert the InputImage from Dart to Java
-    // `rotation` is not used in iOS to convert the InputImage from Dart to Obj-C:
-    // in both platforms `rotation` and `camera.lensDirection` can be used to compensate `x` and `y` coordinates on a canvas:
     final camera = cameras![0];
     final sensorOrientation = camera.sensorOrientation;
-    // print(
-    //     'lensDirection: ${camera.lensDirection}, sensorOrientation: $sensorOrientation, ${_controller?.value.deviceOrientation} ${_controller?.value.lockedCaptureOrientation} ${_controller?.value.isCaptureOrientationLocked}');
+    /* 
+    get image rotation
+    it is used in android to convert the InputImage from Dart to Java
+   `rotation` is not used in iOS to convert the InputImage from Dart to Obj-C:
+    in both platforms `rotation` and `camera.lensDirection` can be used to compensate `x` and `y` coordinates on a canvas:
+    print( 'lensDirection: ${camera.lensDirection}, sensorOrientation: $sensorOrientation, ${_controller?.value.deviceOrientation} ${_controller?.value.lockedCaptureOrientation} ${_controller?.value.isCaptureOrientationLocked}');
+    */
     InputImageRotation? rotation;
     if (Platform.isIOS) {
       rotation = InputImageRotationValue.fromRawValue(sensorOrientation);
@@ -115,10 +118,8 @@ class CameraViewController extends FullLifeCycleController
           _orientations[cameraController!.value.deviceOrientation];
       if (rotationCompensation == null) return null;
       if (camera.lensDirection == CameraLensDirection.front) {
-        // front-facing
         rotationCompensation = (sensorOrientation + rotationCompensation) % 360;
       } else {
-        // back-facing
         rotationCompensation =
             (sensorOrientation - rotationCompensation + 360) % 360;
       }
@@ -130,11 +131,8 @@ class CameraViewController extends FullLifeCycleController
 
     // get image format
     final format = InputImageFormatValue.fromRawValue(image.format.raw);
-    // validate format depending on platform
-    // only supported formats:
-    // * nv21 for Android
-    // * bgra8888 for iOS
-    // print(format);
+    // validate format depending on platform. supported formats: nv21 for Android, bgra8888 for iOS
+
     if (format == null ||
         (Platform.isAndroid && format != InputImageFormat.nv21) ||
         (Platform.isIOS && format != InputImageFormat.bgra8888)) return null;
@@ -156,48 +154,43 @@ class CameraViewController extends FullLifeCycleController
   }
 
   /// takes List of predictions and increases or decreases zoom level according to width of the QR code
-  // void setCameraZoomLevel(List<ResultObjectDetection> predictions) async {
-  //   double level = zoomLevel.value;
+  void setCameraZoomLevel(
+      List<DetectedObject> predictions, Size imageSize) async {
+    double level = zoomLevel.value;
 
-  //   predictions.sort((a, b) =>
-  //       b.score.compareTo(a.score)); // sort predictions according to score
+    if (predictions.isNotEmpty) {
+      // predictions.sort((a, b) => b.labels.first.confidence.compareTo(
+      //     a.labels.first.confidence)); // sort predictions according to score
 
-  //   if (predictions.isNotEmpty) {
-  //     if (predictions.first.rect.width <= 0.8 &&
-  //         predictions.first.rect.left >= 0.1 &&
-  //         predictions.first.rect.right >= 0.1 &&
-  //         predictions.first.rect.top >= 0.1 &&
-  //         predictions.first.rect.bottom >= 0.1) {
-  //       if (predictions.first.rect.width > 0 &&
-  //           predictions.first.rect.width < 0.3) {
-  //         level += 0.3;
-  //       } else if (predictions.first.rect.width >= 0.3 &&
-  //           predictions.first.rect.width < 0.5) {
-  //         level += 0.2;
-  //       } else if (predictions.first.rect.width >= 0.5 &&
-  //           predictions.first.rect.width < 0.7) {
-  //         level += 0.15;
-  //       } else if (predictions.first.rect.width >= 0.7 &&
-  //           predictions.first.rect.width <= 0.75) {
-  //         level += 0.1;
-  //       }
-  //     } else if (predictions.first.rect.width >= 0.9 &&
-  //         predictions.first.rect.width < 1.5) {
-  //       level -= 0.2;
-  //     }
-  //   }
+      // double height = predictions.first.boundingBox.height / imageSize.width;
+      double width = predictions.first.boundingBox.width / imageSize.height;
 
-  //   // check if zoom level is outside [1, maxZoomLevel]
-  //   if (level > maxZoomLevel.value) {
-  //     level = maxZoomLevel.value;
-  //   } else if (level < 1) {
-  //     level = 1;
-  //   }
-  //   if (zoomLevel.value != level) {
-  //     zoomLevel.value = level;
-  //     await cameraController?.setZoomLevel(level);
-  //   }
-  // }
+      double left = predictions.first.boundingBox.left / imageSize.height;
+      double right = predictions.first.boundingBox.right / imageSize.width;
+      double top = predictions.first.boundingBox.top / imageSize.height;
+      double bottom = predictions.first.boundingBox.bottom / imageSize.width;
+      if (width <= 0.8 &&
+          left >= 0.1 &&
+          right >= 0.1 &&
+          top >= 0.1 &&
+          bottom >= 0.1) {
+        level += 0.02;
+      } else if (width >= 0.9 && width < 1.5) {
+        level -= 0.05;
+      }
+    }
+
+    // check if zoom level is outside [1, maxZoomLevel]
+    if (level > maxZoomLevel.value) {
+      level = maxZoomLevel.value;
+    } else if (level < 1) {
+      level = 1;
+    }
+    if (zoomLevel.value != level) {
+      zoomLevel.value = level;
+      await cameraController?.setZoomLevel(level);
+    }
+  }
 
   @override
   void onDetached() {
@@ -223,7 +216,9 @@ class CameraViewController extends FullLifeCycleController
     if (!cameraController!.value.isStreamingImages) {
       await cameraController?.startImageStream((CameraImage image) async {
         InputImage? inputImage = _inputImageFromCameraImage(image);
-        _controller.processImage(inputImage!);
+        if (inputImage != null) {
+          _controller.processImage(inputImage, setCameraZoomLevel);
+        }
       });
     }
   }

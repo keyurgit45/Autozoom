@@ -17,7 +17,7 @@ class ObjectDetection extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Object Detection"),
+        title: const Text("Camera Intelligent Autozoom"),
         actions: [
           Obx(() => Text(
                 "Time : ${objectDetectionController.objectDetectionInferenceTime.value.inMilliseconds} ms",
@@ -31,13 +31,8 @@ class ObjectDetection extends StatelessWidget {
       body: Stack(children: [
         Column(
           children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.7,
-              width: MediaQuery.of(context).size.width,
-              child: AspectRatio(
-                child: CameraView(),
-                aspectRatio: 9.0 / 16.0,
-              ),
+            const SizedBox(
+              child: CameraView(),
             ),
             Obx(
               () => Column(

@@ -37,16 +37,9 @@ class HomePage extends StatelessWidget {
                               fontSize: 26, fontWeight: FontWeight.w500),
                           textAlign: TextAlign.center,
                         ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.03,
-                        ),
-                        Text(
-                          "The Flutter app integrates YOLOv8 with three models: COCO and OpenImagesV7 pretrained models for versatile object recognition and a custom-trained QR code model. The app dynamically autozooms to detected objects in the camera feed. \n\nSelect one of the following models to proceed:",
-                          style: GoogleFonts.montserrat(fontSize: 18),
-                          textAlign: TextAlign.justify,
-                        ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.03,
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Image.asset(Consts.imagePath),
                         ),
                         GestureDetector(
                             onTap: () => Get.toNamed(AppRoutes.objectdetection),
