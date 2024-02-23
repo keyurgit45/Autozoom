@@ -2,7 +2,10 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart';
+import 'package:qrscanner/controller/object_detection_controller.dart';
+import 'package:qrscanner/utils/constants.dart';
 
 /// Individual bounding box
 class BoundingBox extends StatelessWidget {
@@ -20,46 +23,70 @@ class BoundingBox extends StatelessWidget {
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    final ObjectDetectionController _controller =
+        Get.find<ObjectDetectionController>();
     final Size size = MediaQuery.of(context).size;
     return Positioned(
-      left: translateX(result.boundingBox.left, size, imageSize, rotation,
-          cameraLensDirection),
-      top: translateX(result.boundingBox.top, size, imageSize, rotation,
-          cameraLensDirection),
-      width: translateX(result.boundingBox.width, size, imageSize, rotation,
-          cameraLensDirection),
-      height: translateX(result.boundingBox.height, size, imageSize, rotation,
-          cameraLensDirection),
-      child: Container(
+        left: translateX(result.boundingBox.left, size, imageSize, rotation,
+            cameraLensDirection),
+        top: translateX(result.boundingBox.top, size, imageSize, rotation,
+            cameraLensDirection),
         width: translateX(result.boundingBox.width, size, imageSize, rotation,
             cameraLensDirection),
         height: translateX(result.boundingBox.height, size, imageSize, rotation,
             cameraLensDirection),
-        decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF318CE7), width: 3),
-            borderRadius: const BorderRadius.all(Radius.circular(2))),
-        child: Align(
-          alignment: Alignment.topLeft,
-          child: FittedBox(
+        child: Obx(
+          () => GestureDetector(
+            onTap: () => _controller.selectObject(result),
             child: Container(
-              color: const Color(0xFF318CE7),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    result.labels.isNotEmpty ? result.labels.first.text : "N/A",
-                    style: const TextStyle(color: Colors.white),
+              width: translateX(result.boundingBox.width, size, imageSize,
+                  rotation, cameraLensDirection),
+              height: translateX(result.boundingBox.height, size, imageSize,
+                  rotation, cameraLensDirection),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                      color: (_controller.selectedObject.value != null &&
+                              _controller.selectedObject.value!.trackingId ==
+                                  result.trackingId)
+                          ? Consts.boundingBoxSelected
+                          : Consts.boundingBoxNotSelected,
+                      width: 3),
+                  borderRadius: const BorderRadius.all(Radius.circular(2))),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: FittedBox(
+                  child: Container(
+                    color: (_controller.selectedObject.value != null &&
+                            _controller.selectedObject.value!.trackingId ==
+                                result.trackingId)
+                        ? Consts.boundingBoxSelected
+                        : Consts.boundingBoxNotSelected,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text(
+                          result.labels.isNotEmpty
+                              ? result.labels.first.text
+                              : "N/A",
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        SizedBox(
+                          width: 3,
+                        ),
+                        Text(
+                            result.labels.isNotEmpty
+                                ? result.labels.first.confidence
+                                    .toStringAsFixed(2)
+                                : ".",
+                            style: const TextStyle(color: Colors.white)),
+                      ],
+                    ),
                   ),
-                  Text(
-                      " ${result.labels.isNotEmpty ? result.labels.first.confidence.toStringAsFixed(2) : "."}",
-                      style: const TextStyle(color: Colors.white)),
-                ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   double translateX(

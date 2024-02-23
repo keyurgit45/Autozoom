@@ -5,6 +5,7 @@ import 'package:qrscanner/controller/camera_view_controller.dart';
 import 'package:qrscanner/controller/object_detection_controller.dart';
 import 'package:qrscanner/pages/bounding_box.dart';
 import 'package:qrscanner/pages/camera_view.dart';
+import 'package:qrscanner/utils/constants.dart';
 
 class ObjectDetection extends StatelessWidget {
   const ObjectDetection({super.key});
@@ -17,7 +18,7 @@ class ObjectDetection extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Camera Intelligent Autozoom"),
+        title: const Text("Object Detection"),
         actions: [
           Obx(() => Text(
                 "Time : ${objectDetectionController.objectDetectionInferenceTime.value.inMilliseconds} ms",
@@ -31,8 +32,32 @@ class ObjectDetection extends StatelessWidget {
       body: Stack(children: [
         Column(
           children: [
-            const SizedBox(
-              child: CameraView(),
+            SizedBox(
+              child: Stack(children: [
+                CameraView(),
+                Positioned(
+                    right: 0.0,
+                    left: 0.0,
+                    bottom: 8.0,
+                    child: SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          activeTrackColor: Consts.activeTrackColor,
+                          thumbColor: Consts.sliderThumbColor,
+                          inactiveTrackColor: Consts.inActiveTrackColor,
+                          overlayShape:
+                              RoundSliderOverlayShape(overlayRadius: 30.0),
+                        ),
+                        child: Obx(() => Slider(
+                              min: 1.0,
+                              max: controller.maxZoomLevel.value,
+                              value: controller.zoomLevel.value,
+                              onChanged: (val) async {
+                                controller.zoomLevel.value = val;
+                                await controller.cameraController
+                                    ?.setZoomLevel(val);
+                              },
+                            ))))
+              ]),
             ),
             Obx(
               () => Column(
@@ -45,7 +70,12 @@ class ObjectDetection extends StatelessWidget {
                     children: [
                       Text(
                         "Zoom Level : ${controller.zoomLevel.value.toStringAsFixed(3)}",
-                        style: const TextStyle(fontSize: 18),
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: controller.zoomLevel.value ==
+                                    controller.maxZoomLevel.value
+                                ? Colors.red
+                                : Colors.black),
                       ),
                       Text(
                         "MAX Zoom : ${controller.maxZoomLevel.value}",
@@ -73,17 +103,21 @@ class ObjectDetection extends StatelessWidget {
                                 radius: 40,
                                 child: controller.isTakingPicture.value
                                     ? const CircularProgressIndicator()
-                                    : const Icon(
-                                        Icons.camera_alt_rounded,
-                                        size: 52,
-                                      ),
+                                    : const Icon(Icons.camera_alt_rounded,
+                                        size: 52, color: Colors.black),
                               ),
                               const SizedBox(
                                 height: 7,
                               ),
-                              Text(controller.isTakingPicture.value
-                                  ? "Please wait..."
-                                  : "Take a Picture")
+                              Text(
+                                controller.isTakingPicture.value
+                                    ? "Please wait..."
+                                    : "Take a Picture",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500),
+                              )
                             ],
                           ),
                         ),
@@ -97,15 +131,19 @@ class ObjectDetection extends StatelessWidget {
                               CircleAvatar(
                                 backgroundColor: Colors.grey.shade200,
                                 radius: 40,
-                                child: const Icon(
-                                  Icons.zoom_out,
-                                  size: 52,
-                                ),
+                                child: const Icon(Icons.zoom_out,
+                                    size: 52, color: Colors.black),
                               ),
                               const SizedBox(
                                 height: 7,
                               ),
-                              const Text("Reset Zoom")
+                              const Text(
+                                "Reset Zoom",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500),
+                              )
                             ],
                           ),
                         ),
@@ -121,28 +159,30 @@ class ObjectDetection extends StatelessWidget {
             objectDetectionController.results.value,
             objectDetectionController.imageSize.value,
             objectDetectionController.rotation.value)),
-        // Obx(() => objectDetectionController.detectedClasses.value > 1
-        //     ? Positioned(
-        //         top: 13,
-        //         left: 20,
-        //         right: 20,
-        //         child: Container(
-        //           height: 30,
-        //           alignment: Alignment.center,
-        //           decoration: const BoxDecoration(
-        //               color: Colors.white,
-        //               borderRadius: BorderRadius.all(Radius.circular(12))),
-        //           child: Text(
-        //             "Please keep only 1 object in frame",
-        //             style: TextStyle(
-        //                 color: Colors.grey.shade700,
-        //                 fontSize: 16,
-        //                 fontWeight: FontWeight.bold),
-        //             textAlign: TextAlign.center,
-        //           ),
-        //         ),
-        //       )
-        //     : Container())
+        Obx(() => objectDetectionController.results.value.isNotEmpty
+            ? Positioned(
+                top: 13,
+                left: 40,
+                right: 40,
+                child: Container(
+                  height: 30,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(12))),
+                  child: Text(
+                    objectDetectionController.selectedObject.value == null
+                        ? "Select any object"
+                        : "Keep the object at center",
+                    style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )
+            : Container())
       ]),
     );
   }

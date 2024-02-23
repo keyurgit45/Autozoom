@@ -22,7 +22,7 @@ class CameraViewController extends FullLifeCycleController
   double ratio = 0;
 
   var zoomLevel = 1.0.obs;
-  var maxZoomLevel = 1.0.obs;
+  var maxZoomLevel = 1.1.obs;
   var isTakingPicture = false.obs;
 
   final _orientations = {
@@ -154,28 +154,27 @@ class CameraViewController extends FullLifeCycleController
   }
 
   /// takes List of predictions and increases or decreases zoom level according to width of the QR code
-  void setCameraZoomLevel(
-      List<DetectedObject> predictions, Size imageSize) async {
+  void setCameraZoomLevel(DetectedObject? object, Size imageSize) async {
     double level = zoomLevel.value;
 
-    if (predictions.isNotEmpty) {
-      // predictions.sort((a, b) => b.labels.first.confidence.compareTo(
-      //     a.labels.first.confidence)); // sort predictions according to score
+    if (object != null) {
+      double height = object.boundingBox.height / imageSize.width;
+      double width = object.boundingBox.width / imageSize.height;
 
-      // double height = predictions.first.boundingBox.height / imageSize.width;
-      double width = predictions.first.boundingBox.width / imageSize.height;
-
-      double left = predictions.first.boundingBox.left / imageSize.height;
-      double right = predictions.first.boundingBox.right / imageSize.width;
-      double top = predictions.first.boundingBox.top / imageSize.height;
-      double bottom = predictions.first.boundingBox.bottom / imageSize.width;
-      if (width <= 0.8 &&
+      double left = object.boundingBox.left / imageSize.height;
+      double right = object.boundingBox.right / imageSize.width;
+      double top = object.boundingBox.top / imageSize.height;
+      double bottom = object.boundingBox.bottom / imageSize.width;
+      print("width: $width, height: $height");
+      if (width <= 0.7 &&
+          height <= 0.7 &&
           left >= 0.1 &&
           right >= 0.1 &&
           top >= 0.1 &&
           bottom >= 0.1) {
         level += 0.02;
-      } else if (width >= 0.9 && width < 1.5) {
+      } else if ((width >= 0.9 && width <= 1.0) ||
+          height >= 0.9 && height <= 1.0) {
         level -= 0.05;
       }
     }
