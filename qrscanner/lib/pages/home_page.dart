@@ -75,11 +75,11 @@ class HomePage extends StatelessWidget {
                         )),
                   ])),
           AnimatedBuilder(
-              animation: patternController.controller,
+              animation: patternController.controller!,
               builder: (context, child) {
                 return Positioned(
                   bottom: 0,
-                  right: patternController.animation.value?.value,
+                  right: patternController.animation!.value,
                   child: ClipPath(
                     clipper: PatternPainter(),
                     child: Opacity(
@@ -94,11 +94,11 @@ class HomePage extends StatelessWidget {
                 );
               }),
           AnimatedBuilder(
-              animation: patternController.controller,
+              animation: patternController.controller!,
               builder: (context, child) {
                 return Positioned(
                   bottom: 0,
-                  left: patternController.animation.value?.value,
+                  left: patternController.animation!.value,
                   child: ClipPath(
                     clipper: PatternPainter(),
                     child: Opacity(

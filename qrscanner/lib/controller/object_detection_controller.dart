@@ -3,11 +3,10 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart';
+import 'package:qrscanner/enums.dart';
 import 'package:qrscanner/utils/app_logger.dart';
 import 'package:qrscanner/utils/constants.dart';
 import 'package:qrscanner/utils/path_utils.dart';
-
-enum Mode { Single, Multiple }
 
 class ObjectDetectionController extends GetxController {
   ObjectDetector? _objectDetector;

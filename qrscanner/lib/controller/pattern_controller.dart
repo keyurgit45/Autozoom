@@ -3,25 +3,29 @@ import 'package:get/get.dart';
 
 class PatternController extends GetxController
     with GetTickerProviderStateMixin {
-  var animation = Rxn<Animation<double>>();
-  late AnimationController controller;
+  final _animation = Rxn<Animation<double>>();
+  Animation<double>? get animation => _animation.value;
+
+  final _controller = Rxn<AnimationController>();
+  AnimationController? get controller => _controller.value;
 
   @override
   void onInit() {
     super.onInit();
-    controller =
+    _controller.value =
         AnimationController(duration: Duration(seconds: 4), vsync: this)
           ..repeat(reverse: false);
 
-    animation.value = (Tween<double>(begin: -400, end: 0).animate(controller))
-      ..addListener(() {
-        update();
-      });
+    _animation.value =
+        (Tween<double>(begin: -400, end: 0).animate(_controller.value!))
+          ..addListener(() {
+            update();
+          });
   }
 
   @override
   void dispose() {
     super.dispose();
-    controller.dispose();
+    _controller.value?.dispose();
   }
 }
