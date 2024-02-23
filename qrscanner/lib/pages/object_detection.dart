@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart';
 import 'package:qrscanner/controller/camera_view_controller.dart';
 import 'package:qrscanner/controller/object_detection_controller.dart';
@@ -18,17 +19,30 @@ class ObjectDetection extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Object Detection"),
+        backgroundColor: Consts.appColor,
+        leading: GestureDetector(
+          onTap: () => Get.back(),
+          child: const Icon(
+            Icons.arrow_back_ios_new_outlined,
+            color: Colors.white,
+          ),
+        ),
+        title: Text(
+          "Object Detection",
+          style: GoogleFonts.montserrat(color: Colors.white),
+        ),
         actions: [
           Obx(() => Text(
                 "Time : ${objectDetectionController.objectDetectionInferenceTime.value.inMilliseconds} ms",
-                style: const TextStyle(fontSize: 16),
+                style:
+                    GoogleFonts.montserrat(color: Colors.white, fontSize: 16),
               )),
           const SizedBox(
             width: 10,
           )
         ],
       ),
+      backgroundColor: Consts.appColor,
       body: Stack(children: [
         Column(
           children: [
@@ -63,28 +77,29 @@ class ObjectDetection extends StatelessWidget {
               () => Column(
                 children: [
                   const SizedBox(
-                    height: 20,
+                    height: 15,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Text(
                         "Zoom Level : ${controller.zoomLevel.value.toStringAsFixed(3)}",
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             fontSize: 18,
                             color: controller.zoomLevel.value ==
                                     controller.maxZoomLevel.value
                                 ? Colors.red
-                                : Colors.black),
+                                : Colors.white),
                       ),
                       Text(
                         "MAX Zoom : ${controller.maxZoomLevel.value}",
-                        style: const TextStyle(fontSize: 18),
+                        style: GoogleFonts.montserrat(
+                            fontSize: 18, color: Colors.white),
                       ),
                     ],
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 15,
                   ),
                   Obx(
                     () => Row(
@@ -104,7 +119,7 @@ class ObjectDetection extends StatelessWidget {
                                 child: controller.isTakingPicture.value
                                     ? const CircularProgressIndicator()
                                     : const Icon(Icons.camera_alt_rounded,
-                                        size: 52, color: Colors.black),
+                                        size: 52, color: Consts.appColor),
                               ),
                               const SizedBox(
                                 height: 7,
@@ -113,10 +128,10 @@ class ObjectDetection extends StatelessWidget {
                                 controller.isTakingPicture.value
                                     ? "Please wait..."
                                     : "Take a Picture",
-                                style: TextStyle(
-                                    color: Colors.black,
+                                style: GoogleFonts.montserrat(
+                                    color: Colors.white,
                                     fontSize: 14,
-                                    fontWeight: FontWeight.w500),
+                                    fontWeight: FontWeight.w600),
                               )
                             ],
                           ),
@@ -132,17 +147,17 @@ class ObjectDetection extends StatelessWidget {
                                 backgroundColor: Colors.grey.shade200,
                                 radius: 40,
                                 child: const Icon(Icons.zoom_out,
-                                    size: 52, color: Colors.black),
+                                    size: 52, color: Consts.appColor),
                               ),
                               const SizedBox(
                                 height: 7,
                               ),
-                              const Text(
+                              Text(
                                 "Reset Zoom",
-                                style: TextStyle(
-                                    color: Colors.black,
+                                style: GoogleFonts.montserrat(
+                                    color: Colors.white,
                                     fontSize: 14,
-                                    fontWeight: FontWeight.w500),
+                                    fontWeight: FontWeight.w600),
                               )
                             ],
                           ),
