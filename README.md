@@ -23,7 +23,7 @@ To get started with QR Code Autozoom, follow these steps:
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/keyurgit45/QRCodeAutozoom.git
+   git clone https://github.com/keyurgit45/Autozoom.git
    ```
 
 2. **Navigate to the Project Directory:**
