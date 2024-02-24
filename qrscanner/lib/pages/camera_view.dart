@@ -14,7 +14,10 @@ class CameraView extends StatelessWidget {
       builder: (controller) {
         if (controller.cameraController == null ||
             !controller.cameraController!.value.isInitialized) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+              child: CircularProgressIndicator(
+            color: Colors.white,
+          ));
         }
         return CameraPreview(controller.cameraController!);
       },

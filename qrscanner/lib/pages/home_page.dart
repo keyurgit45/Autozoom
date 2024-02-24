@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:qrscanner/controller/pattern_controller.dart';
 import 'package:qrscanner/navigation/app_routes.dart';
+import 'package:qrscanner/pages/pattern_painter.dart';
 import 'package:qrscanner/utils/constants.dart';
 
 class HomePage extends StatelessWidget {
@@ -9,129 +11,107 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final patternController = Get.put(PatternController());
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Camera Intelligent Autozoom',
-            style: GoogleFonts.montserrat(
-                color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          elevation: 4,
-          backgroundColor: Consts.appColor,
-        ),
-        body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14.0),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.04,
-                        ),
-                        Text(
-                          "Camera with intelligent autozoom in Flutter",
-                          style: GoogleFonts.montserrat(
-                              fontSize: 26, fontWeight: FontWeight.w500),
-                          textAlign: TextAlign.center,
-                        ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.03,
-                        ),
-                        Text(
-                          "The Flutter app integrates YOLOv8 with three models: COCO and OpenImagesV7 pretrained models for versatile object recognition and a custom-trained QR code model. The app dynamically autozooms to detected objects in the camera feed. \n\nSelect one of the following models to proceed:",
-                          style: GoogleFonts.montserrat(fontSize: 18),
-                          textAlign: TextAlign.justify,
-                        ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.03,
-                        ),
-                        GestureDetector(
-                            onTap: () =>
-                                Get.toNamed(AppRoutes.qrautozoom, arguments: {
-                                  "model": Consts.modelPath1,
-                                  "label": Consts.modelLabels1,
-                                  "imgz": Consts.modelImgz1,
-                                  "numberOfClasses": Consts.modelClasses1
-                                }),
-                            child: Container(
-                              height: 50,
-                              width: MediaQuery.of(context).size.width * 0.7,
-                              decoration: BoxDecoration(
-                                  color: Consts.appColor,
-                                  borderRadius: BorderRadius.circular(12)),
-                              child: Center(
-                                  child: Text(
-                                Consts.modelName1,
-                                style: GoogleFonts.montserrat(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              )),
-                            )),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.03,
-                        ),
-                        GestureDetector(
-                            onTap: () =>
-                                Get.toNamed(AppRoutes.qrautozoom, arguments: {
-                                  "model": Consts.modelPath2,
-                                  "label": Consts.modelLabels2,
-                                  "imgz": Consts.modelImgz2,
-                                  "numberOfClasses": Consts.modelClasses2
-                                }),
-                            child: Container(
-                              height: 50,
-                              width: MediaQuery.of(context).size.width * 0.7,
-                              decoration: BoxDecoration(
-                                  color: Consts.appColor,
-                                  borderRadius: BorderRadius.circular(12)),
-                              child: Center(
-                                  child: Text(
-                                Consts.modelName2,
-                                style: GoogleFonts.montserrat(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              )),
-                            )),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.03,
-                        ),
-                        GestureDetector(
-                            onTap: () =>
-                                Get.toNamed(AppRoutes.qrautozoom, arguments: {
-                                  "model": Consts.modelPath3,
-                                  "label": Consts.modelLabels3,
-                                  "imgz": Consts.modelImgz3,
-                                  "numberOfClasses": Consts.modelClasses3
-                                }),
-                            child: Container(
-                              height: 50,
-                              width: MediaQuery.of(context).size.width * 0.7,
-                              decoration: BoxDecoration(
-                                  color: Consts.appColor,
-                                  borderRadius: BorderRadius.circular(12)),
-                              child: Center(
-                                  child: Text(
-                                Consts.modelName3,
-                                style: GoogleFonts.montserrat(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              )),
-                            )),
-                      ]),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Text(
-                      "Made with 💙 by Keyur",
-                      style: GoogleFonts.montserrat(fontSize: 14),
+        backgroundColor: Consts.appColor,
+        body: Stack(children: [
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14.0),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.1,
+                    ),
+                    Text(
+                      'Camera Intelligent Autozoom',
+                      style: GoogleFonts.montserrat(
+                          color: Colors.white, fontSize: 24),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.05,
+                    ),
+                    Text(
+                      "Autozoom is an app that automatically adjusts the zoom level to capture an object that is within the camera's view. In case there are multiple objects in the camera's view, you can select the object of your choice by tapping on the label of the box.",
+                      style: GoogleFonts.montserrat(
+                          fontSize: 17, color: Colors.white),
                       textAlign: TextAlign.justify,
                     ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.05,
+                    ),
+                    GestureDetector(
+                        onTap: () => Get.toNamed(AppRoutes.objectdetection),
+                        child: Container(
+                          height: 50,
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.white,
+                                  blurRadius: 10.0,
+                                ),
+                              ]),
+                          child: Center(
+                              child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.play_arrow),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                "Start Detecting",
+                                style: GoogleFonts.montserrat(
+                                    fontSize: 18,
+                                    color: Consts.appColor,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          )),
+                        )),
+                  ])),
+          AnimatedBuilder(
+              animation: patternController.controller!,
+              builder: (context, child) {
+                return Positioned(
+                  bottom: 0,
+                  right: patternController.animation!.value,
+                  child: ClipPath(
+                    clipper: PatternPainter(),
+                    child: Opacity(
+                      opacity: 0.5,
+                      child: Container(
+                        color: Colors.white,
+                        width: 900,
+                        height: 200,
+                      ),
+                    ),
                   ),
-                ])));
+                );
+              }),
+          AnimatedBuilder(
+              animation: patternController.controller!,
+              builder: (context, child) {
+                return Positioned(
+                  bottom: 0,
+                  left: patternController.animation!.value,
+                  child: ClipPath(
+                    clipper: PatternPainter(),
+                    child: Opacity(
+                      opacity: 0.5,
+                      child: Container(
+                        color: Colors.white,
+                        width: 900,
+                        height: 200,
+                      ),
+                    ),
+                  ),
+                );
+              }),
+        ]));
   }
 }
