@@ -189,7 +189,7 @@ class ObjectDetection extends StatelessWidget {
                     objectDetectionController.selectedObject.value == null
                         ? "Select any object"
                         : "Keep the object at center",
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Consts.appColor,
                         fontSize: 16,
                         fontWeight: FontWeight.bold),

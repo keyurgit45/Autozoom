@@ -23,7 +23,7 @@ class BoundingBox extends StatelessWidget {
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    final ObjectDetectionController _controller =
+    final ObjectDetectionController controller =
         Get.find<ObjectDetectionController>();
     final Size size = MediaQuery.of(context).size;
     return Positioned(
@@ -37,7 +37,7 @@ class BoundingBox extends StatelessWidget {
             cameraLensDirection),
         child: Obx(
           () => GestureDetector(
-            onTap: () => _controller.selectObject(result),
+            onTap: () => controller.selectObject(result),
             child: Container(
               width: translateX(result.boundingBox.width, size, imageSize,
                   rotation, cameraLensDirection),
@@ -45,8 +45,8 @@ class BoundingBox extends StatelessWidget {
                   rotation, cameraLensDirection),
               decoration: BoxDecoration(
                   border: Border.all(
-                      color: (_controller.selectedObject.value != null &&
-                              _controller.selectedObject.value!.trackingId ==
+                      color: (controller.selectedObject.value != null &&
+                              controller.selectedObject.value!.trackingId ==
                                   result.trackingId)
                           ? Consts.boundingBoxSelected
                           : Consts.boundingBoxNotSelected,
@@ -56,8 +56,8 @@ class BoundingBox extends StatelessWidget {
                 alignment: Alignment.topLeft,
                 child: FittedBox(
                   child: Container(
-                    color: (_controller.selectedObject.value != null &&
-                            _controller.selectedObject.value!.trackingId ==
+                    color: (controller.selectedObject.value != null &&
+                            controller.selectedObject.value!.trackingId ==
                                 result.trackingId)
                         ? Consts.boundingBoxSelected
                         : Consts.boundingBoxNotSelected,
@@ -70,7 +70,7 @@ class BoundingBox extends StatelessWidget {
                               : "N/A",
                           style: const TextStyle(color: Colors.white),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 3,
                         ),
                         Text(

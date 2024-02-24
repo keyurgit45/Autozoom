@@ -13,7 +13,7 @@ class PatternController extends GetxController
   void onInit() {
     super.onInit();
     _controller.value =
-        AnimationController(duration: Duration(seconds: 4), vsync: this)
+        AnimationController(duration: const Duration(seconds: 4), vsync: this)
           ..repeat(reverse: false);
 
     _animation.value =

@@ -61,15 +61,14 @@ class ObjectDetectionController extends GetxController {
     if (!canProcess.value) return;
     if (isBusy.value) return;
     isBusy.value = true;
+
     Stopwatch stopwatch = Stopwatch()..start();
     final objects = await _objectDetector!.processImage(inputImage);
     stopwatch.stop();
-    // print('Objects found: ${objects.length}\n\n');
+
     if (inputImage.metadata?.size != null &&
         inputImage.metadata?.rotation != null) {
-      // print(inputImage.metadata?.size);
-      // print(objects.toList());
-
+      // filter only those results that have non-empty labels
       results.value =
           objects.where((element) => element.labels.isNotEmpty).toList();
       imageSize.value = inputImage.metadata!.size;
@@ -80,6 +79,7 @@ class ObjectDetectionController extends GetxController {
       //     results.map((element) => element.labels.first.text).toList());
       // uniqueClasses.value = set.length;
 
+      // if there is only one objected in frame, zoom to that object
       if (results.length == 1) {
         if (detectionMode.value == Mode.Multiple) {
           selectedObject.value = null;
@@ -91,6 +91,7 @@ class ObjectDetectionController extends GetxController {
               selectedObject.value!, setCameraZoomLevel, imageSize.value);
         }
       } else {
+        // if there are multiple objects, let user choose the object to zoom
         if (detectionMode.value == Mode.Single) {
           selectedObject.value = null;
         }

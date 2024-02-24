@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
@@ -165,8 +164,8 @@ class CameraViewController extends FullLifeCycleController
       double right = object.boundingBox.right / imageSize.width;
       double top = object.boundingBox.top / imageSize.height;
       double bottom = object.boundingBox.bottom / imageSize.width;
-      print("width: $width, height: $height");
-      if (width <= 0.7 &&
+
+      if (width <= 0.75 &&
           height <= 0.7 &&
           left >= 0.1 &&
           right >= 0.1 &&
