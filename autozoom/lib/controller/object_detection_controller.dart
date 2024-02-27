@@ -19,7 +19,6 @@ class ObjectDetectionController extends GetxController {
   var rotation = Rx<InputImageRotation>(InputImageRotation.rotation90deg);
   var objectDetectionInferenceTime = Rx<Duration>(Duration.zero);
 
-  // var uniqueClasses = 0.obs;
   var selectedObject = Rxn<DetectedObject>();
   var detectionMode = Rx(Mode.Single);
 
@@ -75,10 +74,6 @@ class ObjectDetectionController extends GetxController {
       rotation.value = inputImage.metadata!.rotation;
       objectDetectionInferenceTime.value = stopwatch.elapsed;
 
-      // Set<String> set = Set.from(
-      //     results.map((element) => element.labels.first.text).toList());
-      // uniqueClasses.value = set.length;
-
       // if there is only one objected in frame, zoom to that object
       if (results.length == 1) {
         if (detectionMode.value == Mode.Multiple) {
@@ -93,7 +88,14 @@ class ObjectDetectionController extends GetxController {
       } else {
         // if there are multiple objects, let user choose the object to zoom
         if (detectionMode.value == Mode.Single) {
-          selectedObject.value = null;
+          // if object is same as seletedObject do not set selectedObject null
+          if (selectedObject.value != null) {
+            int matchedObject = results.value
+                .where((element) =>
+                    element.trackingId == selectedObject.value!.trackingId)
+                .length;
+            if (matchedObject == 0) selectedObject.value = null;
+          }
         }
         detectionMode.value = Mode.Multiple;
         if (selectedObject.value != null) {

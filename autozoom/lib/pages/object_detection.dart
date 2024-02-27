@@ -48,7 +48,7 @@ class ObjectDetection extends StatelessWidget {
           children: [
             SizedBox(
               child: Stack(children: [
-                CameraView(),
+                const CameraView(),
                 Positioned(
                     right: 0.0,
                     left: 0.0,
@@ -58,8 +58,8 @@ class ObjectDetection extends StatelessWidget {
                           activeTrackColor: Consts.activeTrackColor,
                           thumbColor: Consts.sliderThumbColor,
                           inactiveTrackColor: Consts.inActiveTrackColor,
-                          overlayShape:
-                              RoundSliderOverlayShape(overlayRadius: 30.0),
+                          overlayShape: const RoundSliderOverlayShape(
+                              overlayRadius: 30.0),
                         ),
                         child: Obx(() => Slider(
                               min: 1.0,
@@ -208,6 +208,8 @@ class ObjectDetection extends StatelessWidget {
     if (results == null || results.isEmpty) {
       return Container();
     }
+    // sort the objects according to width to avoid overlaps by bigger object
+    results.sort((b, a) => a.boundingBox.width.compareTo(b.boundingBox.width));
     return Stack(
       children: results
           .map((e) =>
