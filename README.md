@@ -17,6 +17,8 @@ This application addresses the challenge outlined in the [home qualification tas
 
 ## Demo
 
+to be added
+
 ## Getting Started
 
 To get started with QR Code Autozoom, follow these steps:
@@ -40,6 +42,10 @@ To get started with QR Code Autozoom, follow these steps:
    ```bash
    flutter run
    ```
+   
+## APK
+
+You can obtain it either from the releases section or from [Google Drive](https://drive.google.com/file/d/1ozkGYPZzgJ1TwKzvVaCZOyeypt3Uhz1a/view?usp=sharing).
 
 ### Acknowledgments
 
