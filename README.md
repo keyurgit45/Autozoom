@@ -17,7 +17,7 @@ This application addresses the challenge outlined in the [home qualification tas
 
 ## Demo
 
-to be added
+https://github.com/keyurgit45/Autozoom/assets/75253653/dbef90f0-5265-42d4-aa39-15bb782a752c
 
 ## Getting Started
 
